@@ -21,11 +21,10 @@ class _TodoAppState extends State<TodoApp> {
     _loadTasks();
   }
 
-  // Fetch tasks from API and update state
   Future<void> _loadTasks() async {
     try {
       List<Task> tasks = await apiService.fetchTasks();
-      print('Tasks fetched: $tasks'); // Debugging line to see the fetched tasks
+      print('Tasks fetched: $tasks');
       setState(() {
         _tasks = tasks;
         _loading = false;
@@ -38,8 +37,9 @@ class _TodoAppState extends State<TodoApp> {
     }
   }
 
-  // Dialog for adding new tasks
   void showAddDialog() {
+    print("Task Fetched: $_tasks");
+
     showDialog(
       context: context,
       builder: (context) {
@@ -117,7 +117,10 @@ class _TodoAppState extends State<TodoApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To-Do App'),
+        title: const Text(
+          'To-Do App',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -203,7 +206,7 @@ class _TodoAppState extends State<TodoApp> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: showAddDialog,
+        onPressed: _loadTasks,
         child: const Icon(Icons.add),
       ),
     );
