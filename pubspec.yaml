@@ -76,27 +76,27 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Montserrat
-      fonts:
-        - asset: assets/fonts/montserrat/Montserrat-Black.ttf
-        - asset: assets/fonts/montserrat/Montserrat-BlackItalic.ttf
-        - asset: assets/fonts/montserrat/Montserrat-Bold.ttf
-        - asset: assets/fonts/montserrat/Montserrat-BoldItalic.ttf
-        - asset: assets/fonts/montserrat/Montserrat-ExtraBold.ttf
-        - asset: assets/fonts/montserrat/Montserrat-ExtraBoldItalic.ttf
-        - asset: assets/fonts/montserrat/Montserrat-ExtraLight.ttf
-        - asset: assets/fonts/montserrat/Montserrat-ExtraLightItalic.ttf
-        - asset: assets/fonts/montserrat/Montserrat-Italic.ttf
-        - asset: assets/fonts/montserrat/Montserrat-Light.ttf
-        - asset: assets/fonts/montserrat/Montserrat-LightItalic.ttf
-        - asset: assets/fonts/montserrat/Montserrat-Medium.ttf
-        - asset: assets/fonts/montserrat/Montserrat-MediumItalic.ttf
-        - asset: assets/fonts/montserrat/Montserrat-Regular.ttf
-        - asset: assets/fonts/montserrat/Montserrat-SemiBold.ttf
-        - asset: assets/fonts/montserrat/Montserrat-SemiBoldItalic.ttf
-        - asset: assets/fonts/montserrat/Montserrat-Thin.ttf
-        - asset: assets/fonts/montserrat/Montserrat-ThinItalic.ttf
+  # fonts:
+  #   - family: Montserrat
+  #     fonts:
+  #       - asset: assets/fonts/montserrat/Montserrat-Black.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-BlackItalic.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-Bold.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-BoldItalic.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-ExtraBold.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-ExtraBoldItalic.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-ExtraLight.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-ExtraLightItalic.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-Italic.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-Light.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-LightItalic.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-Medium.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-MediumItalic.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-Regular.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-SemiBold.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-SemiBoldItalic.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-Thin.ttf
+  #       - asset: assets/fonts/montserrat/Montserrat-ThinItalic.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

@@ -14,6 +14,7 @@ class _TodoAppState extends State<TodoApp> {
   List<Task> _tasks = [];
   bool _loading = true;
   final ApiService apiService = ApiService();
+  int _selectedPriority = 1; // Default priority
 
   @override
   void initState() {
@@ -24,7 +25,6 @@ class _TodoAppState extends State<TodoApp> {
   Future<void> _loadTasks() async {
     try {
       List<Task> tasks = await apiService.fetchTasks();
-      print('Tasks fetched: $tasks');
       setState(() {
         _tasks = tasks;
         _loading = false;
@@ -37,44 +37,95 @@ class _TodoAppState extends State<TodoApp> {
     }
   }
 
+  // START ADD TASK FUNCTIONALITY
   void showAddDialog() {
-    print("Task Fetched: $_tasks");
+    TextEditingController contentController = TextEditingController();
+    int selectedPriority = _selectedPriority;
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("Add Task"),
-          content: const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                decoration: InputDecoration(hintText: "Enter Title"),
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text("Add Task"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: contentController,
+                    decoration: const InputDecoration(
+                      hintText: "Enter Task Content",
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Select Priority: "),
+                      DropdownButton<int>(
+                        value: selectedPriority,
+                        items: const [
+                          DropdownMenuItem(value: 1, child: Text("Priority 1")),
+                          DropdownMenuItem(value: 2, child: Text("Priority 2")),
+                          DropdownMenuItem(value: 3, child: Text("Priority 3")),
+                          DropdownMenuItem(value: 4, child: Text("Priority 4")),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() {
+                              selectedPriority = value;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              TextField(
-                decoration: InputDecoration(hintText: "Enter Priority"),
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {});
-                _loadTasks();
-              },
-              child: const Text("Add"),
-            ),
-          ],
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Cancel"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _addTask(contentController.text, selectedPriority);
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Add"),
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
+
+  Future<void> _addTask(String content, int priority) async {
+    if (content.isEmpty) return;
+
+    Task newTask = Task(
+      id: DateTime.now().toString(), // Temporarily create an id
+      content: content,
+      completed: false,
+      priority: priority,
+    );
+
+    try {
+      // Call API to add the task with content and priority
+      await apiService.addTask(content, priority); // Pass content and priority
+      setState(() {
+        _tasks.add(newTask); // Update UI with new task
+      });
+    } catch (e) {
+      print('Error adding task: $e');
+    }
+  }
+  // END ADD TASK FUNCTIONALITY
 
   void checkBoxChanged(Task task, bool? value) {
     setState(() {
@@ -142,6 +193,7 @@ class _TodoAppState extends State<TodoApp> {
                     endActionPane: ActionPane(
                       motion: const StretchMotion(),
                       children: [
+                        // START DELETE TASK FUNCTIONALITY
                         SlidableAction(
                           borderRadius: BorderRadius.circular(10),
                           backgroundColor: Colors.red,
@@ -152,6 +204,7 @@ class _TodoAppState extends State<TodoApp> {
                           },
                           icon: Icons.delete,
                         ),
+                        // END DELETE TASK FUNCTIONALITY
                         SlidableAction(
                           borderRadius: BorderRadius.circular(10),
                           backgroundColor: Colors.white,
@@ -184,18 +237,32 @@ class _TodoAppState extends State<TodoApp> {
                             },
                           ),
                           Expanded(
-                            child: Text(
-                              task.content ?? "No Content",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                                decoration: task.completed == true
-                                    ? TextDecoration.lineThrough
-                                    : TextDecoration.none,
-                                decorationThickness: 2,
-                                decorationColor: Colors.white,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  task.content ?? "No Content",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                    decoration: task.completed == true
+                                        ? TextDecoration.lineThrough
+                                        : TextDecoration.none,
+                                    decorationThickness: 2,
+                                    decorationColor: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Priority: ${task.priority}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -206,7 +273,7 @@ class _TodoAppState extends State<TodoApp> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _loadTasks,
+        onPressed: showAddDialog,
         child: const Icon(Icons.add),
       ),
     );
