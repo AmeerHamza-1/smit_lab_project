@@ -14,7 +14,7 @@ class _TodoAppState extends State<TodoApp> {
   List<Task> _tasks = [];
   bool _loading = true;
   final ApiService apiService = ApiService();
-  int _selectedPriority = 1; // Default priority
+  int _selectedPriority = 1; 
 
   @override
   void initState() {
@@ -109,17 +109,17 @@ class _TodoAppState extends State<TodoApp> {
     if (content.isEmpty) return;
 
     Task newTask = Task(
-      id: DateTime.now().toString(), // Temporarily create an id
+      id: DateTime.now().toString(), 
       content: content,
       completed: false,
       priority: priority,
     );
 
     try {
-      // Call API to add the task with content and priority
-      await apiService.addTask(content, priority); // Pass content and priority
+     
+      await apiService.addTask(content, priority); 
       setState(() {
-        _tasks.add(newTask); // Update UI with new task
+        _tasks.add(newTask); 
       });
     } catch (e) {
       print('Error adding task: $e');
@@ -133,36 +133,115 @@ class _TodoAppState extends State<TodoApp> {
     });
   }
 
-  void editTask(Task task) {
-    TextEditingController taskEditCont =
+  // START EDIT TASK FUNCTIONALITY
+  void showEditDialog(Task task) {
+    TextEditingController contentController =
         TextEditingController(text: task.content);
+    int selectedPriority = task.priority ?? 0;
+
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Edit Task'),
-            content: TextField(
-              controller: taskEditCont,
-              decoration: const InputDecoration(hintText: 'Edit Task'),
-            ),
-            actions: [
-              ElevatedButton(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text("Edit Task"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: contentController,
+                    decoration: const InputDecoration(
+                      hintText: "Enter Task Content",
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Select Priority: "),
+                      DropdownButton<int>(
+                        value: selectedPriority,
+                        items: const [
+                          DropdownMenuItem(value: 1, child: Text("Priority 1")),
+                          DropdownMenuItem(value: 2, child: Text("Priority 2")),
+                          DropdownMenuItem(value: 3, child: Text("Priority 3")),
+                          DropdownMenuItem(value: 4, child: Text("Priority 4")),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() {
+                              selectedPriority = value;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      task.content = taskEditCont.text;
-                    });
                     Navigator.pop(context);
                   },
-                  child: const Text('Update')),
-              ElevatedButton(
+                  child: const Text("Cancel"),
+                ),
+                ElevatedButton(
                   onPressed: () {
+                    _updateTask(
+                        task.id!, contentController.text, selectedPriority);
                     Navigator.pop(context);
                   },
-                  child: const Text('Cancel')),
-            ],
-          );
-        });
+                  child: const Text("Update"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
+
+  Future<void> _updateTask(String id, String content, int priority) async {
+    if (content.isEmpty) return;
+
+    try {
+      
+      await apiService.updateTask(id, content, priority);
+
+     
+      setState(() {
+        final index = _tasks.indexWhere((task) => task.id == id);
+        if (index != -1) {
+          _tasks[index] = Task(
+            id: id,
+            content: content,
+            completed: _tasks[index].completed,
+            priority: priority,
+          );
+        }
+      });
+    } catch (e) {
+      print('Error updating task: $e');
+    }
+  }
+  // END EDIT TASK FUNCTIONALITY
+
+  // START SORT FUNCTIONALITY
+  void _sortTasks(bool ascending) {
+    setState(() {
+      _tasks.sort((a, b) {
+        int aPriority = a.priority ?? 0; 
+        int bPriority = b.priority ?? 0; 
+        return ascending
+            ? aPriority.compareTo(bPriority)
+            : bPriority.compareTo(aPriority);
+      });
+    });
+  }
+
+  // END SORT FUNCTIONALITY
 
   @override
   Widget build(BuildContext context) {
@@ -180,6 +259,27 @@ class _TodoAppState extends State<TodoApp> {
             ),
           ),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'low_to_high') {
+                _sortTasks(true);
+              } else if (value == 'high_to_low') {
+                _sortTasks(false);
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'low_to_high',
+                child: Text('Low to High Priority'),
+              ),
+              const PopupMenuItem(
+                value: 'high_to_low',
+                child: Text('High to Low Priority'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -199,7 +299,7 @@ class _TodoAppState extends State<TodoApp> {
                           backgroundColor: Colors.red,
                           onPressed: (context) {
                             setState(() {
-                              _tasks.removeAt(index); // Simulating delete
+                              _tasks.removeAt(index); 
                             });
                           },
                           icon: Icons.delete,
@@ -208,7 +308,7 @@ class _TodoAppState extends State<TodoApp> {
                         SlidableAction(
                           borderRadius: BorderRadius.circular(10),
                           backgroundColor: Colors.white,
-                          onPressed: (context) => editTask(task),
+                          onPressed: (context) => showEditDialog(task),
                           icon: Icons.edit,
                         )
                       ],
