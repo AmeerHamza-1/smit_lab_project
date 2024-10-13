@@ -297,10 +297,16 @@ class _TodoAppState extends State<TodoApp> {
                         SlidableAction(
                           borderRadius: BorderRadius.circular(10),
                           backgroundColor: Colors.red,
-                          onPressed: (context) {
-                            setState(() {
-                              _tasks.removeAt(index); 
-                            });
+                          onPressed: (context) async {
+                            try {
+                              await apiService.deleteTask(_tasks[index].id!);
+
+                              setState(() {
+                                _tasks.removeAt(index);
+                              });
+                            } catch (e) {
+                              print('Error deleting task: $e');
+                            }
                           },
                           icon: Icons.delete,
                         ),
