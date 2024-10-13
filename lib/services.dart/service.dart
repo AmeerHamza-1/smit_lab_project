@@ -49,9 +49,9 @@ class ApiService {
     }
   }
   
-    Future<void> updateTask(String id, String content, int priority) async {
+    Future<void> updateTask(String id, String content, int priority, {bool? completed}) async {
     final url = Uri.parse('https://api.todoist.com/rest/v2/tasks/$id');
-    final response = await http.put(
+    final response = await http.post(
       url,
       headers: {
         'Authorization': 'Bearer $apiToken',
@@ -60,8 +60,10 @@ class ApiService {
       body: jsonEncode({
         'content': content,
         'priority': priority,
+        'completed': completed,
       }),
     );
+
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update task');
