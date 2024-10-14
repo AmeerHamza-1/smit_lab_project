@@ -382,11 +382,24 @@ void _filterTasksByPriority(int priority) {
                         SlidableAction(
                           borderRadius: BorderRadius.circular(10),
                           backgroundColor: Colors.red,
+<<<<<<< HEAD
                           onPressed: (context)async {
                             await apiService.deleteTask(task.id!);
                             setState(() {
                               _tasks.removeAt(index); 
                             });
+=======
+                          onPressed: (context) async {
+                            try {
+                              await apiService.deleteTask(_tasks[index].id!);
+
+                              setState(() {
+                                _tasks.removeAt(index);
+                              });
+                            } catch (e) {
+                              print('Error deleting task: $e');
+                            }
+>>>>>>> 4a11d9d6316ba5944bfd023be77206700a953343
                           },
                           icon: Icons.delete,
                         ),
